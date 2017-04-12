@@ -27,3 +27,10 @@
 *.exe
 *.out
 *.app
+
+# Visual studio files
+*.sdf
+*.suo
+Debug/
+Release/
+ipch/

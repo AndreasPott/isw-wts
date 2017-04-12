@@ -265,7 +265,7 @@ public:
 	RevoluteJoint R1;	// das erste Drehgelenk
 	RigidBody B1;		// das erste Armsegment
 	RevoluteJoint R2;	// das zweite Drehgelenk
-	RigidBody B2;		// das uweote Armsegment
+	RigidBody B2;		// das zweite Armsegment
 
 public:
 	// der Konstruktor, die Initialisierung unserer konkreten Bausteine mit ihren Vorgängern muss hier
