@@ -158,16 +158,17 @@ public:
 	// die "Kinematik" berechnen, die darin besteht, das Koordinatensystem in den Urspung zu fixieren.
 	virtual void doKinematics()
 	{
-		// die funktion erzeugt immer das Null-Koordinatensystem
+		// die Funktion erzeugt immer das Null-Koordinatensystem
 		r.x=0;
 		r.y=0;
 		R.set(0.0);
 	}
 };
 
-// das erste "echte" Mechanische Element. Ein Drehgelenk dreht das Ausgangskoordinatensystem gegenüber dem
-// Eingang. Die Position bleibt Konstant. 
-// der Winkel theta fungiert als weiterer Eingang des System und definiert die Position des Drehgelenks
+// das erste "echte" Mechanische Element. Ein Drehgelenk dreht das 
+// Ausgangskoordinatensystem gegenüber dem Eingang. Die Position bleibt 
+// konstant. Der Winkel theta fungiert als weiterer Eingang des System 
+// und definiert die Position des Drehgelenks
 class RevoluteJoint : public MechanicalElement
 {
 public:

@@ -37,13 +37,53 @@ public:
   // Konstruktor
   Complex() : Re(0.0), Im(0.0) {}
   // Methoden
-  void add(Complex& val);
-  void printCartesian();
+  void set(const double& re, const double& im);
+  double real() const;
+  double imag() const;
+  void add(const Complex& val);
+  void printCartesian() const;
   void printPolar();
 };
 
+void Complex::set(const double& re, const double& im)
+{
+	Re=re;
+	Im=im;
+}
+
+double Complex::real() const
+{ 
+	return Re;
+}
+
+double Complex::imag() const
+{
+	return Im;
+}
+
+void Complex::add(const Complex& val)
+{
+	Re+=val.Re;
+	Im+=val.Im;
+}
+
+void Complex::printCartesian() const
+{
+	std::cout << Re << ',' << Im << std::endl;
+}
+
 int main(int argc, char* argv[])
 {
+	// Klasese complex
+	Complex a,b;
+	a.printCartesian();
+	a.set(1,2);
+	a.printCartesian();
+	b.set(3,4);
+	a.add(b);
+	a.printCartesian();
+
+
 	// unser vector
 	double vector[9]={0};
 
