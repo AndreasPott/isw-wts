@@ -3,8 +3,9 @@
 
 Copyright (c) 2017 Andreas Pott
 
-This repo contains some sample codes and as a matter of fact this readme file
-is itself a sample for building a software project.
+This repo contains some sample codes for scientific software development and 
+as a matter of fact this readme file is itself a sample for building a software
+project.
 
 ## Features
 
