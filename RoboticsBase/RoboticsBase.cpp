@@ -27,49 +27,50 @@
 #include <list>
 #include <iostream>
 
-// Rechenbeispiel zur Vorlesung: "Entwickung von wissenschaftlich technischer Software"
-// Folgende Teilaspekte der Vorlesung sollen in diesem Programmierbeispiel durch Übungen vorgestellt und vertieft werden
-// * Programmdesign
-// * Konkrete Typen für Matrizen und Vektoren
-// * Vererbung und Polymorphismus für Gelenke und Starrkörper (Basisklasse mit simplen abgeleiteten Klassen für P, R, rigid)
-// * Hierarchien (sowohl kind-of als part-of) lassen sich an dem Vererbungsbeispiel erklären
-//		Kind-of für die (potenziellen) mechanischen Komponenten des Roboters
-//		Part-of für die Komposition des Roboters
-// * Design Pattern
-//		Container und Iteratoren für das Speichern und Traversieren von gleichen Elementen
-//		Fassade für die API
-//		Kompositum als (map-chain)
-//		Decorator z.B. für Bewegungsmessung am End-Effektor
-//		Einzelstück für einen Interpreter
-//		Kommando ggf. eine triviale Bewegungsplanung
-// Kapselung und Invarianten anhand einer Parametrisierung der Rotationsmatrix (auch im ebenen Fall möglich)
-// Dokumentation mit doxygen
-// Analyse der Qualität mit cpplint, cppcheck
-// 
-// Geplante bzw. mögliche Erweiterungen
-// * Scripting mit Python für elementare Funktionen des Roboters (simple API)
-// * Arbeit mit einem Versionierungssystem
-// * einfache Toolchain (Interaktion zwischen Python und C++), Automatisierung des eigenen Codes
-// * Codegenerierung für die DK eines komplexeren Teilsystems welches z.B. in Python oder Maple symbolisch erstellt wurde
-// * Integration des Rechenmodells in ein ereignisorientiertes Programmgerüst
-
+/*!
+ *  Rechenbeispiel zur Vorlesung: "Entwickung von wissenschaftlich technischer Software"
+ *  Folgende Teilaspekte der Vorlesung sollen in diesem Programmierbeispiel durch Übungen vorgestellt und vertieft werden
+ *  - Programmdesign
+ *  - Konkrete Typen für Matrizen und Vektoren
+ *  - Vererbung und Polymorphismus für Gelenke und Starrkörper (Basisklasse mit simplen abgeleiteten Klassen für P, R, rigid)
+ *  - Hierarchien (sowohl kind-of als part-of) lassen sich an dem Vererbungsbeispiel erklären
+ * 		Kind-of für die (potenziellen) mechanischen Komponenten des Roboters
+ * 		Part-of für die Komposition des Roboters
+ *  - Design Pattern
+ * 		Container und Iteratoren für das Speichern und Traversieren von gleichen Elementen
+ * 		Fassade für die API
+ * 		Kompositum als (map-chain)
+ * 		Decorator z.B. für Bewegungsmessung am End-Effektor
+ * 		Einzelstück für einen Interpreter
+ * 		Kommando ggf. eine triviale Bewegungsplanung
+ *  Kapselung und Invarianten anhand einer Parametrisierung der Rotationsmatrix (auch im ebenen Fall möglich)
+ *  Dokumentation mit doxygen
+ *  Analyse der Qualität mit cpplint, cppcheck
+ *  
+ *  Geplante bzw. mögliche Erweiterungen
+ *  - Scripting mit Python für elementare Funktionen des Roboters (simple API)
+ *  - Arbeit mit einem Versionierungssystem
+ *  - einfache Toolchain (Interaktion zwischen Python und C++), Automatisierung des eigenen Codes
+ *  - Codegenerierung für die DK eines komplexeren Teilsystems welches z.B. in Python oder Maple symbolisch erstellt wurde
+ *  - Integration des Rechenmodells in ein ereignisorientiertes Programmgerüst
+ */
 
 // Mathematische Grundobjekte
 ///////////////////////////////////////////////////////////////////////////////
 
-// Diese Klasse repräsentiert einen konkreten Typ eine Vektors im zwei-dimensionalen Vektorraum
-// Die beiden Variablen x,y stellen dabei die Koordianten des Vektors in Euklidischer 
-// Parametrisierung dar. 
+//! Diese Klasse repräsentiert einen konkreten Typ eine Vektors im zwei-dimensionalen Vektorraum
+//! Die beiden Variablen x,y stellen dabei die Koordianten des Vektors in Euklidischer 
+//! Parametrisierung dar. 
 class Vector2 
 {
 public:
-	double x,y;	// die Koordianten des Vektors
+	double x,y;	//!< die Koordianten des Vektors
 public:
-	// der Standard-Konstruktor erzeugt einen Nullvektor
+	//! der Standard-Konstruktor erzeugt einen Nullvektor
 	Vector2() : x(0.0), y(0.0) {}
-	// der Parametrische Konstruktor erlaubt auch das direkte Setzen der Koordinaten
+	//! der Parametrische Konstruktor erlaubt auch das direkte Setzen der Koordinaten
 	Vector2(double X, double Y) : x(X), y(Y) {}
-	// die Operation add addiert zu den aktuellen Vektor den Parameter value dazu und gibt das ergebnis zurück
+	//! die Operation add addiert zu den aktuellen Vektor den Parameter value dazu und gibt das ergebnis zurück
 	Vector2 add(const Vector2& value)
 	{
 		Vector2 result;
@@ -78,7 +79,7 @@ public:
 		return result;
 	}
 
-	// die komfortablere Variante der Funktion "add" mit Operatorüberladung. 
+	//! die komfortablere Variante der Funktion "add" mit Operatorüberladung. 
 	Vector2& operator+=(const Vector2& value)
 	{
 		x+=value.x;
@@ -88,28 +89,29 @@ public:
 };
 
 
-// Die Klasse RotationMatrix2 ist ebenfalls ein konkreter Typ und repräsentiert eine Rotations- 
-// bzw. Transformationsmatrix in der Ebene.
-// Da die Rotation als Matrix anschaulich gesehen vier Elementen aber nur eine Invariante 
-// (nämlich den Winkel phi) hat,
-// wird die Matrix nur durch ihre Invariante phi parametrisiert. Den Benutzer der Klasse muss es 
-// nicht stören, das die Klasse intern nur den Winkel speichert.
+/*  Die Klasse RotationMatrix2 ist ebenfalls ein konkreter Typ und repräsentiert eine Rotations- 
+ *  bzw. Transformationsmatrix in der Ebene.
+ *  Da die Rotation als Matrix anschaulich gesehen vier Elementen aber nur eine Invariante 
+ *  (nämlich den Winkel phi) hat,
+ *  wird die Matrix nur durch ihre Invariante phi parametrisiert. Den Benutzer der Klasse muss es 
+ *  nicht stören, das die Klasse intern nur den Winkel speichert.
+ */
 class RotationMatrix2
 {
 private:
-	double phi;	// der Winkel der Rotation, gleichzeitig die invariante des Matrix, 
+	double phi;	//!< der Winkel der Rotation, gleichzeitig die invariante des Matrix, 
 public:
 	RotationMatrix2() : phi(0.0) {}
-	// den Rotationswinkel einstellen
+	//! den Rotationswinkel einstellen
 	void set(double angle) { phi=angle; }
-	// den Drehwinkel ermitteln
+	//! den Drehwinkel ermitteln
 	double getAngle() { return phi; }
-	// eine Rotationsmatrix mit einem Winkel weiterdrehen 
+	//! eine Rotationsmatrix mit einem Winkel weiterdrehen 
 	void rotate(double angle) { phi+=angle; }
-	// eine Rotationsmatrix mit einer anderen Multiplizieren
+	//! eine Rotationsmatrix mit einer anderen Multiplizieren
 	void rotate(RotationMatrix2 R) { phi+=R.phi; }
-	// einen Vektor transformieren (drehen) und das Ergebnis zurückgeben; 
-	// hier wird intern die Matrixschreibweise sichtbar
+	//! einen Vektor transformieren (drehen) und das Ergebnis zurückgeben; 
+	//! hier wird intern die Matrixschreibweise sichtbar
 	Vector2 rotate(Vector2 v) 
 	{
 		return Vector2(
@@ -122,40 +124,44 @@ public:
 // Mechanische Elemente des Roboters
 ///////////////////////////////////////////////////////////////////////////////
 
-// Das MechanicalElement ist ein Abstrakter Typ, der sich nicht instanziieren lässt.
-// MechanicalElement definiert das Interface in Form seiner virtuellen Funktionen sowie die
-// von allen abgeleiteten Klassen zu nutzenden Daten (position, orientierung, eingang).
-// das Paar (r,R) repräsentiert dabei ein bewegliches Koordinatensystem in der Ebene
+/*! Das MechanicalElement ist ein Abstrakter Typ, der sich nicht instanziieren lässt.
+ *  MechanicalElement definiert das Interface in Form seiner virtuellen Funktionen sowie die
+ *  von allen abgeleiteten Klassen zu nutzenden Daten (position, orientierung, eingang).
+ *  das Paar (r,R) repräsentiert dabei ein bewegliches Koordinatensystem in der Ebene
+ */
 class MechanicalElement
 {
 protected:
 	// private Daten der Klasse
-	Vector2 r;	// Position
-	RotationMatrix2 R;  // Orientierung
-	MechanicalElement *input; // Eingang der kinematischen Kette
+	Vector2 r;					//!< Position des Elements
+	RotationMatrix2 R;			//!< Orientierung des Elements
+	MechanicalElement *input;	//!< Eingang der kinematischen Kette
 public:
 	MechanicalElement() : input(0) {}
 	
 	// Konkrete Dienste der Klasse
-	// Position des Koordiantensystems 
+
+	//! Position des Koordiantensystems ausgeben	
 	Vector2 getPosition() { return r; }
-	// Orientierung des Koordiantensystems ausgeben
+	//! Orientierung des Koordiantensystems ausgeben
 	RotationMatrix2 getOrientation() { return R; }
 
-	// Interface der Klasse, rein virtuell (Abstraktion)
-	// berechne die Vorwärtskinematik des Elements aus den aktuellen Zuständen
+	//! Interface der Klasse, rein virtuell (Abstraktion)
+	//! berechne die Vorwärtskinematik des Elements aus den aktuellen Zuständen
 	virtual void doKinematics()=0;
 };
 
-// Die Klass WorldFrame repräsentiert das inertialsystem und tut im Grunde nicht viel außer dafür zu sorgen,
-// dass die Daten auf null gesetzt werden. 
+
+//! Die Klass WorldFrame repräsentiert das Inertialsystem und tut im Grunde 
+//! nicht viel, außer dafür zu sorgen, dass die Daten auf Null gesetzt werden. 
 class WorldFrame : public MechanicalElement
 {
 public:
-	// leerer Konstruktor
+	//! leerer Konstruktor
 	WorldFrame() {}
 
-	// die "Kinematik" berechnen, die darin besteht, das Koordinatensystem in den Urspung zu fixieren.
+	//! die "Kinematik" berechnen, die darin besteht, das Koordinatensystem 
+	//! in den Urspung zu fixieren.
 	virtual void doKinematics()
 	{
 		// die Funktion erzeugt immer das Null-Koordinatensystem
@@ -165,23 +171,25 @@ public:
 	}
 };
 
-// das erste "echte" Mechanische Element. Ein Drehgelenk dreht das 
-// Ausgangskoordinatensystem gegenüber dem Eingang. Die Position bleibt 
-// konstant. Der Winkel theta fungiert als weiterer Eingang des System 
-// und definiert die Position des Drehgelenks
+
+/*! Das erste "echte" Mechanische Element. Ein Drehgelenk dreht das 
+ *  Ausgangskoordinatensystem gegenüber dem Eingang. Die Position bleibt 
+ *  konstant. Der Winkel theta fungiert als weiterer Eingang des System 
+ *  und definiert die Position des Drehgelenks
+ */
 class RevoluteJoint : public MechanicalElement
 {
 public:
-	double theta;		// der aktuelle Drehwinkel des Gelenks in lokalen Koordinaten
+	double theta;		//!< der aktuelle Drehwinkel des Gelenks in lokalen Koordinaten
 public:
-	// der Konstruktor benötigt das Eingangselemt, an den das Gelenk geknüpft ist
-	explicit RevoluteJoint(MechanicalElement& Input) : theta(0) 
+	//! der Konstruktor benötigt das Eingangselemt, an den das Gelenk geknüpft ist
+	explicit RevoluteJoint(MechanicalElement& Input) : theta(0.0) 
 	{
 		input = &Input;
 	}
 
-	// die Kinematik berechnen das Ausgangskoordiantensystem (inform der Member r,R) aus dem Eingang und 
-	// dem lokalen Zustand
+	//! die Kinematik berechnen das Ausgangskoordiantensystem (inform der Member 
+	//! r,R) aus dem Eingang und dem lokalen Zustand
 	virtual void doKinematics()
 	{
 		r = input->getPosition();
@@ -190,15 +198,19 @@ public:
 	}
 };
 
-// ein weiteres Mechanische Element: Ein starrer Körper repräsentiert die konstante Verschiebung (ein Arm-Segment)
-// zwischen Eingang und Ausgang. Die Orientierung bleibt Konstant während die Position verschoben wird.
-// der wert translation entspricht dabei der geometrischen Größe des modellierten Körpers
+
+/*! Ein weiteres Mechanisches Element: Ein starrer Körper repräsentiert die 
+ *  konstante Verschiebung (ein Arm-Segment) zwischen Eingang und Ausgang. 
+ *  Die Orientierung bleibt konstant während die Position verschoben wird.
+ *  Der Wert translation entspricht dabei der geometrischen Größe des 
+ *  modellierten Körpers.
+ */
 class RigidBody : public MechanicalElement
 {
 public:
-	Vector2 translation; // die Länge des starren Körpers in lokalen Koordinaten
+	Vector2 translation; //!< die Länge des starren Körpers in lokalen Koordinaten
 public:
-	// der Konstruktor benötigt das Eingangselemt, an den das Gelenk geknüpft ist
+	//! der Konstruktor benötigt das Eingangselemt, an den das Gelenk geknüpft ist
 	explicit RigidBody(MechanicalElement& Input) 
 	{
 		input = &Input;
@@ -215,19 +227,21 @@ public:
 	}
 };
 
-// Die Klasse KinematicChain repräsentiert eine kinematische Kette von mechanischen Übertragunsggliedern
-// Die Klasse nutzt das Design Pattern Kompositum, da es eine Menge von Mechaischen Übertragungsgliedern 
-// zusammenfasst und dem ergebnis wiederum die gleiche Schnittstelle des Basiselements gibt
-// Das Kompositum stützt auch das DRY Paradigma, da die Zusammenstellung der kinematische Kette nur einmalig 
-// erfolgt, und die Kette als ganze nun von der KinematicChain repräsentiert (abstrahiert) wird. 
+
+/*!  Die Klasse KinematicChain repräsentiert eine kinematische Kette von mechanischen Übertragunsggliedern
+ *  Die Klasse nutzt das Design Pattern Kompositum, da es eine Menge von Mechaischen Übertragungsgliedern 
+ *  zusammenfasst und dem ergebnis wiederum die gleiche Schnittstelle des Basiselements gibt
+ *  Das Kompositum stützt auch das DRY Paradigma, da die Zusammenstellung der kinematische Kette nur einmalig 
+ *  erfolgt, und die Kette als ganze nun von der KinematicChain repräsentiert (abstrahiert) wird. 
+ */
 class KinematicChain : public MechanicalElement
 {
 private:
-	// ein Container (hier doppelt verkettete Liste) erlaubt beliebig viele Elemente zu sammeln
+	//! ein Container (hier doppelt verkettete Liste) erlaubt beliebig viele Elemente zu sammeln
 	std::list<MechanicalElement*> chain; 
 public:
 	KinematicChain() {}
-	// füngt ein Element in die Kette ein
+	//! füngt ein Element in die Kette ein
 	KinematicChain& add(MechanicalElement& element)
 	{
 		// wir könnten an dieser Stelle die Implementierung robust machen, indem wir prüfen, ob das 
@@ -238,7 +252,7 @@ public:
 		return *this;
 	}
 public:
-	// berechnet die Kinematik. Für eine Kette besteht diese Funktion nur aus der Organisation 
+	//! berechnet die Kinematik. Für eine Kette besteht diese Funktion nur aus der Organisation 
 	virtual void doKinematics()
 	{
 		// die Kinematik für alle Elemente berechnen; mit dem Iterator kann man bequem die
@@ -249,28 +263,29 @@ public:
 	}
 };
 
-// Diese Klasse repräsentiert einen 2R Roboter, d.h. eine Roboter bestehen aus zwei Drehgelenken mit
-// zwei Arm Segmenten.
-// Die Klasse folgt dem Design Pattern "Facade" da sie eine Schnittstelle für einen ganze Anzahl von 
-// einzelelemente zur Verfügung stellt.
-// Die Klasse stellt konzeptionell eine höhere Abstraktion dar, als die Element. Man erkannt dies auch 
-// daran, dass kaum noch Mathematische Basisberechnunge ausgeführt werden.
+/*!Diese Klasse repräsentiert einen 2R Roboter, d.h. eine Roboter bestehen aus zwei Drehgelenken mit
+ * zwei Arm Segmenten.
+ * Die Klasse folgt dem Design Pattern "Facade" da sie eine Schnittstelle für einen ganze Anzahl von 
+ * einzelelemente zur Verfügung stellt.
+ * Die Klasse stellt konzeptionell eine höhere Abstraktion dar, als die Element. Man erkannt dies auch 
+ * daran, dass kaum noch mathematische Basisberechnungen ausgeführt werden.
+ */
 class Robot2R
 {
 public:
-	// Einen Roboter erstellen
+	//! Einen Roboter erstellen
 	KinematicChain robot;
 
 	// die Bausteine des Roboters
-	WorldFrame K0;		// das Inertialsystem
-	RevoluteJoint R1;	// das erste Drehgelenk
-	RigidBody B1;		// das erste Armsegment
-	RevoluteJoint R2;	// das zweite Drehgelenk
-	RigidBody B2;		// das zweite Armsegment
+	WorldFrame K0;		//!< das Inertialsystem
+	RevoluteJoint R1;	//!< das erste Drehgelenk
+	RigidBody B1;		//!< das erste Armsegment
+	RevoluteJoint R2;	//!< das zweite Drehgelenk
+	RigidBody B2;		//!< das zweite Armsegment
 
 public:
-	// der Konstruktor, die Initialisierung unserer konkreten Bausteine mit ihren Vorgängern muss hier
-	// erfolgten
+	//! der Konstruktor, die Initialisierung unserer konkreten Bausteine mit ihren Vorgängern muss hier
+	//! erfolgten
 	Robot2R() : R1(K0), B1(R1), R2(B1), B2(R2) 
 	{
 		// die Geometrie des Roboters definieren
@@ -285,9 +300,9 @@ public:
 		robot.add(B2);		
 	}
 
-	// berechnet die Kinematik des Roboters; die Parameter theta1, theta2 übergeben 
-	// die Gelenkpositionen des Roboters. Das Ergebnis der Berechnung wird als Zustand
-	// gespeichert. 
+	//! berechnet die Kinematik des Roboters; die Parameter theta1, theta2 übergeben 
+	//! die Gelenkpositionen des Roboters. Das Ergebnis der Berechnung wird als Zustand
+	//! gespeichert. 
 	void doKinematics(const double& theta1, const double& theta2)
 	{
 		R1.theta = theta1;
@@ -295,7 +310,7 @@ public:
 		robot.doKinematics();
 	}
 	
-	// gibt den Zustand des Roboters auf dem Bildschrim aus
+	//! gibt den Zustand des Roboters auf dem Bildschrim aus
 	void printTCP()
 	{
 		std::cout << "Position des End-Effektors: (" <<
@@ -306,7 +321,7 @@ public:
 };
 
 
-// das erste Use-Case Szenario
+//! das erste Use-Case Szenario
 void Robot_Base_Test1(void)
 {
 	// Einen Roboter erstellen
