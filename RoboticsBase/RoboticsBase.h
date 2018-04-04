@@ -1,7 +1,7 @@
 // Rechenbeispiel zur Vorlesung: "Entwickung von wissenschaftlich technischer Software"
 // Stand: 15.03.2017
 //
-// Copyright (c) 2017, Andreas Pott
+// Copyright (c) 2017-2018, Andreas Pott
 //
 // Hiermit wird unentgeltlich jeder Person, die eine Kopie der Software und der 
 // zugehörigen Dokumentationen (die "Software") erhält, die Erlaubnis erteilt, 

@@ -1,7 +1,7 @@
 // Rechenbeispiel zur Vorlesung: "Entwickung von wissenschaftlich technischer Software"
 // Stand: 15.03.2017
 //
-// Copyright (c) 2017, Andreas Pott
+// Copyright (c) 2017-2018, Andreas Pott
 //
 // Hiermit wird unentgeltlich jeder Person, die eine Kopie der Software und der 
 // zugehörigen Dokumentationen (die "Software") erhält, die Erlaubnis erteilt, 
@@ -89,7 +89,7 @@ public:
 };
 
 
-/*  Die Klasse RotationMatrix2 ist ebenfalls ein konkreter Typ und repräsentiert eine Rotations- 
+/*! Die Klasse RotationMatrix2 ist ebenfalls ein konkreter Typ und repräsentiert eine Rotations- 
  *  bzw. Transformationsmatrix in der Ebene.
  *  Da die Rotation als Matrix anschaulich gesehen vier Elementen aber nur eine Invariante 
  *  (nämlich den Winkel phi) hat,
@@ -228,7 +228,7 @@ public:
 };
 
 
-/*!  Die Klasse KinematicChain repräsentiert eine kinematische Kette von mechanischen Übertragunsggliedern
+/*! Die Klasse KinematicChain repräsentiert eine kinematische Kette von mechanischen Übertragunsggliedern
  *  Die Klasse nutzt das Design Pattern Kompositum, da es eine Menge von Mechaischen Übertragungsgliedern 
  *  zusammenfasst und dem ergebnis wiederum die gleiche Schnittstelle des Basiselements gibt
  *  Das Kompositum stützt auch das DRY Paradigma, da die Zusammenstellung der kinematische Kette nur einmalig 
@@ -263,12 +263,13 @@ public:
 	}
 };
 
-/*!Diese Klasse repräsentiert einen 2R Roboter, d.h. eine Roboter bestehen aus zwei Drehgelenken mit
- * zwei Arm Segmenten.
- * Die Klasse folgt dem Design Pattern "Facade" da sie eine Schnittstelle für einen ganze Anzahl von 
- * einzelelemente zur Verfügung stellt.
- * Die Klasse stellt konzeptionell eine höhere Abstraktion dar, als die Element. Man erkannt dies auch 
- * daran, dass kaum noch mathematische Basisberechnungen ausgeführt werden.
+
+/*! Diese Klasse repräsentiert einen 2R Roboter, d.h. eine Roboter bestehen aus zwei Drehgelenken mit
+ *  zwei Arm Segmenten.
+ *  Die Klasse folgt dem Design Pattern "Facade" da sie eine Schnittstelle für einen ganze Anzahl von 
+ *  einzelelemente zur Verfügung stellt.
+ *  Die Klasse stellt konzeptionell eine höhere Abstraktion dar, als die Element. Man erkannt dies auch 
+ *  daran, dass kaum noch mathematische Basisberechnungen ausgeführt werden.
  */
 class Robot2R
 {
@@ -364,6 +365,7 @@ void Robot_Base_Test1(void)
 			(*itor)->getOrientation().getAngle() << 
 			" )\n";
 }
+
 
 // das zweite Use-Case Szenario
 void Robot_Base_Test2(void)
